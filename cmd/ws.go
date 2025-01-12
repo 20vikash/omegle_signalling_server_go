@@ -20,4 +20,18 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer ws.Close()
+
+	for {
+		_, msg, err := ws.ReadMessage()
+		if err != nil {
+			log.Println("read error:", err)
+			break
+		}
+		log.Printf("Received: %s\n", msg)
+
+		if err := ws.WriteMessage(websocket.TextMessage, msg); err != nil {
+			log.Println("write error:", err)
+			break
+		}
+	}
 }
