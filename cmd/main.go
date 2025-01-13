@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 )
+
+var Mu = new(sync.Mutex)
 
 func main() {
 	http.HandleFunc("/ws", handleConnections)
