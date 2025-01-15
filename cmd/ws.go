@@ -18,6 +18,9 @@ var clients = make([]*websocket.Conn, 0)
 var pairs = make(map[*websocket.Conn]*websocket.Conn)
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "https://rtc.selfmade.fun")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
 	ws, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
@@ -30,17 +33,16 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	log.Println(clients)
 
 	con1, con2, err := match.Match_pair(&clients, &pairs, Mu)
-	pairs[con1] = con2
-	pairs[con2] = con1
-	Initiate(con1)
 
 	if err != nil {
 		log.Println("No pair found.. Waiting for another connection")
 	}
 
 	if con1 != nil && con2 != nil {
-		con1.WriteMessage(websocket.TextMessage, []byte("You got a pair"))
-		con2.WriteMessage(websocket.TextMessage, []byte("You got a pair"))
+		pairs[con1] = con2
+		pairs[con2] = con1
+		Initiate(con1)
+		log.Println("Step 1 done")
 	}
 
 	for {
@@ -54,14 +56,17 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		if message == "NEXT" {
 			Next_pair(ws)
 		} else {
-			pair := strings.Split(message, ",")
+			pair := strings.Split(message, "~")
 			role := pair[0]
 			code := pair[1]
 
 			if role == helper.OFFER {
-				SDP_offer(con2, code)
+				SDP_offer(pairs[ws], code)
+				log.Println("Step 2 done")
 			} else if role == helper.ANSWER {
-				SDP_answer(con1, code)
+				log.Println("Hey there")
+				SDP_answer(pairs[ws], code)
+				log.Println("Step 3 done")
 			}
 		}
 	}

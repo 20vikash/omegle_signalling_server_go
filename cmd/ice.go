@@ -12,9 +12,9 @@ func Initiate(con1 *websocket.Conn) {
 }
 
 func SDP_offer(con2 *websocket.Conn, code string) {
-
+	con2.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("%v~%v", helper.OFFER, code)))
 }
 
 func SDP_answer(con1 *websocket.Conn, code string) {
-
+	con1.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("%v~%v", helper.ADD_ANSWER, code)))
 }
