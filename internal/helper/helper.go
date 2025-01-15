@@ -2,6 +2,11 @@ package helper
 
 import "github.com/gorilla/websocket"
 
+const INITIATE = "initiate"
+const OFFER = "sdp"
+const ANSWER = "answer"
+const ADD_ANSWER = "add"
+
 func RemoveSliceElement(s []*websocket.Conn, element any) []*websocket.Conn {
 	res := make([]*websocket.Conn, 0)
 

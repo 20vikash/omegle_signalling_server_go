@@ -30,6 +30,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	con1, con2, err := match.Match_pair(&clients, &pairs, Mu)
 	pairs[con1] = con2
 	pairs[con2] = con1
+	Initiate(con1)
 
 	if err != nil {
 		log.Println("No pair found.. Waiting for another connection")
