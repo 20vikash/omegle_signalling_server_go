@@ -49,31 +49,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		message := string(p)
 
 		if message == "NEXT" {
-			on, tn, old, err := match.Next_pair(ws, &clients, &pairs, Mu)
-
-			if err != nil {
-				log.Println(err.Error())
-				continue
-			}
-
-			if tn == ws {
-				pairs[tn] = on
-				pairs[on] = tn
-
-				writeNewPair(ws, on)
-
-				continue
-			}
-
-			pairs[ws] = on
-			pairs[on] = ws
-			writeNewPair(ws, on)
-
-			if tn != nil {
-				pairs[old] = tn
-				pairs[tn] = old
-				writeNewPair(old, tn)
-			}
+			Next_pair(ws)
 		}
 	}
 }
