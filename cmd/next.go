@@ -19,18 +19,18 @@ func Next_pair(ws *websocket.Conn) {
 		pairs[tn] = on
 		pairs[on] = tn
 
-		writeNewPair(ws, on)
+		Initiate(tn)
 
 		return
 	}
 
 	pairs[ws] = on
 	pairs[on] = ws
-	writeNewPair(ws, on)
+	Initiate(ws)
 
 	if tn != nil {
 		pairs[old] = tn
 		pairs[tn] = old
-		writeNewPair(old, tn)
+		Initiate(old)
 	}
 }

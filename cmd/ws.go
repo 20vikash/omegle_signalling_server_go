@@ -71,8 +71,3 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
-
-func writeNewPair(con1 *websocket.Conn, con2 *websocket.Conn) {
-	con1.WriteMessage(websocket.TextMessage, []byte("You got a new pair"))
-	con2.WriteMessage(websocket.TextMessage, []byte("You got a new pair"))
-}
