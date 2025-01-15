@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
+	"signal/signal/internal/helper"
 	"signal/signal/internal/match"
+	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -51,6 +53,16 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 		if message == "NEXT" {
 			Next_pair(ws)
+		} else {
+			pair := strings.Split(message, ",")
+			role := pair[0]
+			code := pair[1]
+
+			if role == helper.OFFER {
+				SDP_offer(con2, code)
+			} else if role == helper.ANSWER {
+				SDP_answer(con1, code)
+			}
 		}
 	}
 }
