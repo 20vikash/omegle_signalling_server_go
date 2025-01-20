@@ -23,6 +23,20 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	ws, err := upgrader.Upgrade(w, r, nil)
 
+	ws.SetCloseHandler(func(code int, text string) error {
+		log.Println("Connection disconnected")
+
+		pair, ok := pairs[ws]
+		clients = append(clients, pair)
+
+		if ok {
+			delete(pairs, ws)
+			delete(pairs, pair)
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		log.Println(err)
 		return
@@ -48,7 +62,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, p, err := ws.ReadMessage()
 		if err != nil {
-			log.Println(err)
+			break
 		}
 
 		message := string(p)
@@ -57,6 +71,11 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			Next_pair(ws)
 		} else {
 			pair := strings.Split(message, "~")
+
+			if len(pair) != 2 {
+				continue
+			}
+
 			role := pair[0]
 			code := pair[1]
 
@@ -64,7 +83,6 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 				SDP_offer(pairs[ws], code)
 				log.Println("Step 2 done")
 			} else if role == helper.ANSWER {
-				log.Println("Hey there")
 				SDP_answer(pairs[ws], code)
 				log.Println("Step 3 done")
 			}
